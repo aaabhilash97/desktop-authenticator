@@ -2,3 +2,4 @@ dist/
 renderer/out/
 renderer/.next/
 node_modules/
+node_modules
