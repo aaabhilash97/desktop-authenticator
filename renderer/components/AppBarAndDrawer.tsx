@@ -21,36 +21,36 @@ import Link from "next/link";
 
 const drawerWidth = 240;
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    display: "flex"
+    display: "flex",
   },
   drawer: {
     [theme.breakpoints.up("sm")]: {
       width: drawerWidth,
-      flexShrink: 0
-    }
+      flexShrink: 0,
+    },
   },
   appBar: {
     [theme.breakpoints.up("sm")]: {
       width: `calc(100% - ${drawerWidth}px)`,
-      marginLeft: drawerWidth
-    }
+      marginLeft: drawerWidth,
+    },
   },
   menuButton: {
     marginRight: theme.spacing(2),
     [theme.breakpoints.up("sm")]: {
-      display: "none"
-    }
+      display: "none",
+    },
   },
   toolbar: theme.mixins.toolbar,
   drawerPaper: {
-    width: drawerWidth
+    width: drawerWidth,
   },
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3)
-  }
+    padding: theme.spacing(3),
+  },
 }));
 
 function CommonDrawer(props) {
@@ -69,11 +69,11 @@ function CommonDrawer(props) {
       <Divider />
       <List>
         {[
-          {
-            label: "Customers",
-            icon: "supervised_user_circle",
-            link: "/customer/list"
-          }
+          // {
+          //   label: "item1",
+          //   icon: "supervised_user_circle",
+          //   link: "/item1",
+          // },
         ].map((item, index) => (
           <Link key={item.label} as={item["link"]} href={item["link"]}>
             <ListItem button key={item["label"]}>
@@ -119,10 +119,10 @@ function CommonDrawer(props) {
             open={mobileOpen}
             onClose={handleDrawerToggle}
             classes={{
-              paper: classes.drawerPaper
+              paper: classes.drawerPaper,
             }}
             ModalProps={{
-              keepMounted: true // Better open performance on mobile.
+              keepMounted: true, // Better open performance on mobile.
             }}
           >
             {drawer}
@@ -131,7 +131,7 @@ function CommonDrawer(props) {
         <Hidden xsDown implementation="css">
           <Drawer
             classes={{
-              paper: classes.drawerPaper
+              paper: classes.drawerPaper,
             }}
             variant="permanent"
             open
@@ -151,7 +151,7 @@ CommonDrawer.propTypes = {
    */
   container: PropTypes.instanceOf(
     typeof Element === "undefined" ? Object : Element
-  )
+  ),
 };
 
 export default CommonDrawer;

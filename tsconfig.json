@@ -6,9 +6,14 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "*": ["node_modules/*"]
+      "*": ["node_modules/*", "types"]
     },
-    "jsx": "react"
+    "jsx": "react",
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types",
+      "node_modules/@material-ui/core/styles"
+    ]
   },
-  "include": ["./main/**/*"]
+  "include": ["./main/**/*", "./types"]
 }
