@@ -1,9 +1,11 @@
 import { Container } from "unstated";
 
 export default class GlobalContainer extends Container<any> {
-  state = { customerListLoaded: false };
+  state = {
+    accounts: []
+  };
 
-  public update(key, value) {
+  private update(key, value) {
     this.setState({
       ...this.state,
       ...{
@@ -11,4 +13,9 @@ export default class GlobalContainer extends Container<any> {
       }
     });
   }
+
+  public addAccount(value) {
+    this.update("accounts", [...this.state.accounts, value])
+  }
+
 }

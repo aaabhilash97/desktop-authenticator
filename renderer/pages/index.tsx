@@ -1,4 +1,6 @@
 import { Icon, Typography } from "@material-ui/core";
+import Tooltip from "@material-ui/core/Tooltip";
+import { deepOrange, deepPurple } from "@material-ui/core/colors";
 
 import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -36,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
   toolbar: theme.mixins.toolbar,
   content: {
     flexGrow: 1,
-    padding: theme.spacing(3),
+    padding: theme.spacing(0.4),
   },
   list: {
     // width: 250,
@@ -127,9 +129,13 @@ function AccountItem(props) {
         </ListItemAvatar>
         <ListItemText
           primary={
-            <Typography className={classes.primary_text}>
-              {item.account_name}
-            </Typography>
+            <Tooltip title={item.account_name}>
+              <Typography className={classes.primary_text}>
+                {item.account_name.length > 30
+                  ? item.account_name.slice(0, 30) + "..."
+                  : item.account_name}
+              </Typography>
+            </Tooltip>
           }
           secondary={
             <Typography
@@ -203,28 +209,27 @@ function HomePage(props) {
             <main className={classes.content}>
               <div>
                 <List>
-                  {[1, 2, 3, 4, 1, "Delete", "Copy", 1, 1, 2, 2, 4].map(
-                    (text, index) => {
-                      const secret = "KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD";
-                      const token = authenticator.generate(secret);
-                      return (
-                        <AccountItem
-                          key={index}
-                          item={{
-                            id: index,
-                            account_name: "Google(aaabhilash97@gmail.com)",
-                            token: token,
-                          }}
-                        />
-                      );
-                    }
-                  )}
+                  {globalState.state.accounts.map((account, index) => {
+                    const secret = account.secret;
+                    const token = authenticator.generate(secret);
+                    return (
+                      <AccountItem
+                        key={index}
+                        item={{
+                          id: index,
+                          account_name: account.account_name,
+                          token: token,
+                          otp_type: account.otp_type,
+                        }}
+                      />
+                    );
+                  })}
                 </List>
               </div>
               {enableAddNewAccountModel ? (
                 <AddAccountDialogComponent
                   close={handleAddAccountClose}
-                  customerPageState={globalState}
+                  globalState={globalState}
                 />
               ) : null}
               <SpeedDialTooltipOpen
