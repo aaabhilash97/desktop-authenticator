@@ -27,8 +27,8 @@ app.on("ready", async () => {
   }
 
   const mainWindow = new BrowserWindow({
-    width: 370,
-    height: 540,
+    width: isDev ? 900 : 400,
+    height: 600,
     fullscreen: false,
     resizable: isDev ? true : false,
     webPreferences: {

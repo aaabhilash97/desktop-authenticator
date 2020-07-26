@@ -11,33 +11,26 @@ import PrintIcon from "@material-ui/icons/Print";
 import ShareIcon from "@material-ui/icons/Share";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     height: 380,
     transform: "translateZ(0px)",
-    flexGrow: 1
+    flexGrow: 1,
   },
   speedDial: {
-    position: "absolute",
+    position: "fixed",
     bottom: theme.spacing(2),
-    right: theme.spacing(2)
-  }
+    right: theme.spacing(2),
+  },
 }));
 
-// const actions = [
-//   { icon: <FileCopyIcon />, name: "Copy" },
-//   { icon: <SaveIcon />, name: "Save" },
-//   { icon: <PrintIcon />, name: "Print" },
-//   { icon: <ShareIcon />, name: "Share" },
-//   { icon: <FavoriteIcon />, name: "Like" }
-// ];
 export default function SpeedDialTooltipOpen(props) {
   const classes = useStyles({});
   const [open, setOpen] = React.useState(false);
   const [hidden, setHidden] = React.useState(false);
   const { actions } = props;
   const handleVisibility = () => {
-    setHidden(prevHidden => !prevHidden);
+    setHidden((prevHidden) => !prevHidden);
   };
 
   const handleOpen = () => {
@@ -59,7 +52,7 @@ export default function SpeedDialTooltipOpen(props) {
         onOpen={handleOpen}
         open={open}
       >
-        {actions.map(action => (
+        {actions.map((action) => (
           <SpeedDialAction
             key={action.name}
             icon={action.icon}

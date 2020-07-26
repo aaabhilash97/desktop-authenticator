@@ -1,35 +1,45 @@
-import React from "react";
-import PropTypes from "prop-types";
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Typography } from "@material-ui/core";
+import { Icon, Typography } from "@material-ui/core";
 
-import Drawer from "@material-ui/core/Drawer";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
-
-import clsx from "clsx";
-import List from "@material-ui/core/List";
-
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-
-import DeleteIcon from "@material-ui/icons/Delete";
-
-import ListItem from "@material-ui/core/ListItem";
-import ListItemText from "@material-ui/core/ListItemText";
-
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import Avatar from "@material-ui/core/Avatar";
+import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-
+import Drawer from "@material-ui/core/Drawer";
 import IconButton from "@material-ui/core/IconButton";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
+import Snackbar from "@material-ui/core/Snackbar";
+import { makeStyles } from "@material-ui/core/styles";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
+import MuiAlert from "@material-ui/lab/Alert";
+import clsx from "clsx";
+import { authenticator } from "otplib";
+import PropTypes from "prop-types";
+import React, { useEffect } from "react";
+import { Subscribe } from "unstated";
+import AddAccountDialogComponent from "../components/addAccountDialog";
+import SpeedDialTooltipOpen from "../components/speeddial";
+import { IsDark } from "../components/theme";
+import GlobalContainer from "../containers/globalContainer";
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%",
+    display: "flex",
+  },
+  toolbar: theme.mixins.toolbar,
+  content: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
   },
   list: {
-    width: 250,
+    // width: 250,
   },
   fullList: {
     width: "auto",
@@ -39,10 +49,35 @@ const useStyles = makeStyles((theme) => ({
       backgroundColor: theme.palette.secondary.main,
     },
   },
+  primary_text: {
+    userSelect: "none",
+    fontSize: 20,
+    color: theme.palette.primary.main,
+  },
 }));
+function AccountItem(props) {
+  const { item } = props;
 
-function HomePage(props) {
-  const classes = useStyles({});
+  const list = (anchor) => (
+    <div
+      className={clsx(classes.list, {
+        [classes.fullList]: anchor === "top" || anchor === "bottom",
+      })}
+      role="presentation"
+      onClick={toggleDrawer(anchor, false)}
+      onKeyDown={toggleDrawer(anchor, false)}
+    >
+      <List>
+        <ListItem button key="copy">
+          <ListItemIcon>
+            <FileCopyIcon />
+          </ListItemIcon>
+          <ListItemText primary="Copy" />
+        </ListItem>
+      </List>
+    </div>
+  );
+
   const [state, setState] = React.useState({
     top: false,
     bottom: false,
@@ -59,68 +94,64 @@ function HomePage(props) {
 
     setState({ ...state, [anchor]: open });
   };
-  const list = (anchor) => (
-    <div
-      className={clsx(classes.list, {
-        [classes.fullList]: anchor === "top" || anchor === "bottom",
-      })}
-      role="presentation"
-      onClick={toggleDrawer(anchor, false)}
-      onKeyDown={toggleDrawer(anchor, false)}
-    >
-      <List>
-        {["Delete", "Copy"].map((text, index) => (
-          <ListItem button key={text}>
-            <ListItemIcon>
-              <DeleteIcon />
-            </ListItemIcon>
-            <ListItemText primary={text} />
-          </ListItem>
-        ))}
-      </List>
-    </div>
-  );
-
+  const classes = useStyles({});
+  console.log(item);
   return (
-    <div>
-      <List className={classes.root}>
-        {["Delete", "Copy", 1, 1, 2, 2, 4].map((text, index) => (
-          <ListItem key={index} className={classes.totpItem}>
-            <ListItemAvatar>
-              <Avatar>{"E"}</Avatar>
-            </ListItemAvatar>
-            <ListItemText
-              primary={
-                <Typography
-                  style={{ userSelect: "none", fontSize: 15, color: "black" }}
-                >
-                  Google(aaabhilash97@gmail.com)
-                </Typography>
-              }
-              secondary={
-                <Typography
-                  style={{ userSelect: "none", fontSize: 24, color: "#4e7be2" }}
-                >
-                  124 456
-                </Typography>
-              }
-            />
-            <ListItemSecondaryAction>
-              <IconButton edge="start" aria-label="progress">
-                <CircularProgress variant="static" value={100} />
-              </IconButton>
-              <IconButton
-                edge="end"
-                aria-label="menu"
-                onClick={toggleDrawer(anchor, true)}
+    <div key={`${item.id}`}>
+      <ListItem key={`${item.id}`} className={classes.totpItem}>
+        <ListItemAvatar>
+          <Box position="relative" display="inline-flex">
+            <CircularProgress variant="static" value={80} />
+            <Box
+              top={0}
+              left={0}
+              bottom={0}
+              right={0}
+              position="absolute"
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Typography
+                style={{
+                  userSelect: "none",
+                  fontSize: 24,
+                }}
+                component="div"
+                color="textSecondary"
               >
-                <MoreVertIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        ))}
-      </List>
-
+                {"G"}
+              </Typography>
+            </Box>
+          </Box>
+        </ListItemAvatar>
+        <ListItemText
+          primary={
+            <Typography className={classes.primary_text}>
+              {item.account_name}
+            </Typography>
+          }
+          secondary={
+            <Typography
+              style={{
+                userSelect: "none",
+                fontSize: 24,
+              }}
+            >
+              {item.token}
+            </Typography>
+          }
+        />
+        <ListItemSecondaryAction>
+          <IconButton
+            edge="end"
+            aria-label="menu"
+            onClick={toggleDrawer(anchor, true)}
+          >
+            <MoreVertIcon />
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
       <React.Fragment key={anchor}>
         <Drawer
           anchor={anchor}
@@ -131,6 +162,97 @@ function HomePage(props) {
         </Drawer>
       </React.Fragment>
     </div>
+  );
+}
+function HomePage(props) {
+  const classes = useStyles({});
+  const [enableAddNewAccountModel, setAddNewAccountModel] = React.useState(
+    false
+  );
+  let controlActive;
+  const handleAddAccountButtonClick = () => {
+    setAddNewAccountModel(true);
+  };
+  const handleAddAccountClose = () => {
+    setAddNewAccountModel(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener("keydown", (e) => {
+      if (e.key == "Control") {
+        controlActive = true;
+        setTimeout(() => {
+          controlActive = false;
+        }, 500);
+      } else if (controlActive && (e.key == "n" || e.key == "N")) {
+        handleAddAccountButtonClick();
+        controlActive = false;
+      }
+    });
+
+    // Specify how to clean up after this effect:
+    return () => {
+      document.removeEventListener("keydown", () => {});
+    };
+  });
+  return (
+    <Subscribe to={[GlobalContainer]}>
+      {(globalState) => {
+        return (
+          <div className={classes.root}>
+            <main className={classes.content}>
+              <div>
+                <List>
+                  {[1, 2, 3, 4, 1, "Delete", "Copy", 1, 1, 2, 2, 4].map(
+                    (text, index) => {
+                      const secret = "KVKFKRCPNZQUYMLXOVYDSQKJKZDTSRLD";
+                      const token = authenticator.generate(secret);
+                      return (
+                        <AccountItem
+                          key={index}
+                          item={{
+                            id: index,
+                            account_name: "Google(aaabhilash97@gmail.com)",
+                            token: token,
+                          }}
+                        />
+                      );
+                    }
+                  )}
+                </List>
+              </div>
+              {enableAddNewAccountModel ? (
+                <AddAccountDialogComponent
+                  close={handleAddAccountClose}
+                  customerPageState={globalState}
+                />
+              ) : null}
+              <SpeedDialTooltipOpen
+                actions={[
+                  {
+                    icon: <Icon>{"supervisor_account"}</Icon>,
+                    name: "Add account",
+                    onClick: handleAddAccountButtonClick,
+                  },
+                ]}
+              />
+              <Snackbar
+                onClose={console.log.bind(null, "close")}
+                open={false}
+                autoHideDuration={6000}
+              >
+                <Alert
+                  onClose={console.log.bind(null, "close")}
+                  severity="success"
+                >
+                  This is a success message!
+                </Alert>
+              </Snackbar>
+            </main>
+          </div>
+        );
+      }}
+    </Subscribe>
   );
 }
 
