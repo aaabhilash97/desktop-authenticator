@@ -18,13 +18,12 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import MuiAlert from "@material-ui/lab/Alert";
 import clsx from "clsx";
-import { authenticator } from "otplib";
+
 import PropTypes from "prop-types";
 import React, { useEffect } from "react";
 import { Subscribe } from "unstated";
 import AddAccountDialogComponent from "../components/addAccountDialog";
 import SpeedDialTooltipOpen from "../components/speeddial";
-import { IsDark } from "../components/theme";
 import GlobalContainer from "../containers/globalContainer";
 
 function Alert(props) {
@@ -103,7 +102,7 @@ function AccountItem(props) {
       <ListItem key={`${item.id}`} className={classes.totpItem}>
         <ListItemAvatar>
           <Box position="relative" display="inline-flex">
-            <CircularProgress variant="static" value={80} />
+            <CircularProgress variant="static" value={item.progress} />
             <Box
               top={0}
               left={0}
@@ -210,16 +209,15 @@ function HomePage(props) {
               <div>
                 <List>
                   {globalState.state.accounts.map((account, index) => {
-                    const secret = account.secret;
-                    const token = authenticator.generate(secret);
                     return (
                       <AccountItem
                         key={index}
                         item={{
                           id: index,
                           account_name: account.account_name,
-                          token: token,
+                          token: account.token,
                           otp_type: account.otp_type,
+                          progress: account.progress,
                         }}
                       />
                     );
