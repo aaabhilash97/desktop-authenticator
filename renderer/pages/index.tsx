@@ -57,8 +57,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 function AccountItem(props) {
-  const { item } = props;
+  const { item, globalState } = props;
 
+  const copyToClipboard = (token) => {
+    navigator.clipboard.writeText(token);
+    globalState.setAlertMessage("Otp Copied", "success");
+  };
   const list = (anchor) => (
     <div
       className={clsx(classes.list, {
@@ -69,7 +73,13 @@ function AccountItem(props) {
       onKeyDown={toggleDrawer(anchor, false)}
     >
       <List>
-        <ListItem button key="copy">
+        <ListItem
+          button
+          key="copy"
+          onClick={() => {
+            copyToClipboard(item.token);
+          }}
+        >
           <ListItemIcon>
             <FileCopyIcon />
           </ListItemIcon>
@@ -96,10 +106,15 @@ function AccountItem(props) {
     setState({ ...state, [anchor]: open });
   };
   const classes = useStyles({});
-  console.log(item);
   return (
     <div key={`${item.id}`}>
-      <ListItem key={`${item.id}`} className={classes.totpItem}>
+      <ListItem
+        key={`${item.id}`}
+        className={classes.totpItem}
+        onDoubleClick={() => {
+          copyToClipboard(item.token);
+        }}
+      >
         <ListItemAvatar>
           <Box position="relative" display="inline-flex">
             <CircularProgress variant="static" value={item.progress} />
@@ -202,7 +217,7 @@ function HomePage(props) {
   });
   return (
     <Subscribe to={[GlobalContainer]}>
-      {(globalState) => {
+      {(globalState: any) => {
         return (
           <div className={classes.root}>
             <main className={classes.content}>
@@ -211,6 +226,7 @@ function HomePage(props) {
                   {globalState.state.accounts.map((account, index) => {
                     return (
                       <AccountItem
+                        globalState={globalState}
                         key={index}
                         item={{
                           id: index,
@@ -239,18 +255,28 @@ function HomePage(props) {
                   },
                 ]}
               />
-              <Snackbar
-                onClose={console.log.bind(null, "close")}
-                open={false}
-                autoHideDuration={6000}
-              >
-                <Alert
-                  onClose={console.log.bind(null, "close")}
-                  severity="success"
+              {globalState.state.alertMessage ? (
+                <Snackbar
+                  onClose={globalState.setAlertMessage.bind(
+                    globalState,
+                    "",
+                    ""
+                  )}
+                  open={true}
+                  autoHideDuration={2000}
                 >
-                  This is a success message!
-                </Alert>
-              </Snackbar>
+                  <Alert
+                    onClose={globalState.setAlertMessage.bind(
+                      globalState,
+                      "",
+                      ""
+                    )}
+                    severity={globalState.state.alertMessageLevel}
+                  >
+                    {globalState.state.alertMessage}
+                  </Alert>
+                </Snackbar>
+              ) : null}
             </main>
           </div>
         );
