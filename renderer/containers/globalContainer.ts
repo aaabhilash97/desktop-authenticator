@@ -4,7 +4,7 @@ import localforage from "localforage";
 import { Mutex, Semaphore, withTimeout } from 'async-mutex';
 
 export default class GlobalContainer extends Container<any> {
-  private mutexWithTimeout = withTimeout(new Mutex(), 1000, new Error('timeout'));
+  private stateMutex = new Mutex();
 
   state = {
     alertMessage: "",
@@ -14,25 +14,27 @@ export default class GlobalContainer extends Container<any> {
 
   constructor(props = {}) {
     super();
-    setTimeout(async () => {
-      let release;
-      try {
-        release = await this.mutexWithTimeout.acquire();
-        const accounts: any = await localforage.getItem("accounts");
-        if (accounts) {
-          console.log(accounts);
-          this.state.accounts = accounts
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        release();
+    this.init();
+  }
+
+  private async init() {
+    let release;
+    try {
+      release = await this.stateMutex.acquire();
+      const accounts: any = await localforage.getItem("accounts");
+      if (accounts) {
+        console.log(accounts);
+        this.state.accounts = accounts
       }
-    }, 0);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      release && release();
+    }
+
     setInterval(async () => {
-      let release;
       try {
-        release = await this.mutexWithTimeout.acquire();
+        release = await this.stateMutex.acquire();
         let counter = new Date().getSeconds();
         for (let account of this.state.accounts) {
           if (!account.token || !authenticator.verify(account)) {
@@ -52,22 +54,20 @@ export default class GlobalContainer extends Container<any> {
         release && release();
       }
     }, 1000);
+
   }
 
   private async update(value) {
-
     this.setState({
       ...this.state,
       ...value
     });
-
-
   }
 
   public async addAccount(value) {
     let release;
     try {
-      release = await this.mutexWithTimeout.acquire();
+      release = await this.stateMutex.acquire();
       const accounts = [...this.state.accounts, value];
       this.update({ "accounts": accounts });
       await localforage.setItem("accounts", accounts);
@@ -78,13 +78,21 @@ export default class GlobalContainer extends Container<any> {
     }
   }
 
-  public setAlertMessage(message, level) {
-    this.update(
-      {
-        alertMessage: message,
-        alertMessageLevel: level,
-      }
-    );
+  public async setAlertMessage(message, level) {
+    let release;
+    try {
+      release = await this.stateMutex.acquire();
+      this.update(
+        {
+          alertMessage: message,
+          alertMessageLevel: level,
+        }
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      release && release();
+    }
   }
 
 }

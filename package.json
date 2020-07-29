@@ -2,14 +2,14 @@
   "name": "susu",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/index.js",
+  "main": "dist/main/index.js",
   "scripts": {
     "start": "electron dist/main",
     "build": "next build renderer && next export renderer",
     "ts-build": "tsc ",
     "watch": "tsc -w",
     "lint": "tslint -c ./main/tslint.json -p ./main/tsconfig.json",
-    "dist": "npm run build && build"
+    "dist": "npm run build && npm run ts-build && electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -18,37 +18,36 @@
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
-    "@types/electron": "^1.6.10",
     "async-mutex": "^0.2.4",
     "electron-next": "^3.1.5",
     "electron-timber": "^0.5.1",
     "immutable": "^4.0.0-rc.12",
     "localforage": "^1.8.1",
-    "nedb": "^1.8.0",
-    "next": "^9.4.4",
+    "next": "^9.5.0",
     "otplib": "^12.0.1",
     "prop-types": "latest",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "tslint": "^5.20.1",
     "unstated": "^2.1.1",
-    "use-dark-mode": "^2.3.1",
-    "webpack-bundle-analyzer": "^3.8.0"
+    "app-root-path": "^3.0.0",
+    "electron-is-dev": "^1.2.0"
   },
   "build": {
     "files": [
-      "**/*",
-      "!src",
-      "!renderer",
-      "renderer/out"
-    ]
+      "dist/main",
+      "dist/types",
+      "renderer/out",
+      "package.json"
+    ],
+    "appId": "com.xxxxxxx.desktopauthy",
+    "asar": true
   },
   "devDependencies": {
+    "tslint": "^6.1.2",
+    "@types/electron": "^1.6.10",
+    "electron": "9.1.2",
+    "electron-builder": "^22.8.0",
     "@types/react": "^16.9.43",
-    "app-root-path": "^3.0.0",
-    "electron": "7.1.7",
-    "electron-builder": "^21.2.0",
-    "electron-is-dev": "^1.2.0",
     "typescript": "^3.9.7"
   }
 }
