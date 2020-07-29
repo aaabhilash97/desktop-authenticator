@@ -1,6 +1,6 @@
 const logger = require("electron-timber");
 import { ipcMain } from "electron";
-
+import { IpcMessageArg } from "../types/ipc";
 export default function initIpcMainMessages() {
   ipcMain.on("messages", async (event, arg: IpcMessageArg) => {
     try {

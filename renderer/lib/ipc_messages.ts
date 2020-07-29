@@ -1,5 +1,7 @@
 import { ipcRenderer } from "electron";
 
+import { IpcMessageArg } from "../../types/ipc";
+
 export function send(channel: string, payload) {
   return new Promise((resolve, reject) => {
     const response_channel = `response_${channel}_` + new Date().getTime();
