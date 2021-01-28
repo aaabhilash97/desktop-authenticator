@@ -45,7 +45,7 @@
   "devDependencies": {
     "tslint": "^6.1.2",
     "@types/electron": "^1.6.10",
-    "electron": "9.1.2",
+    "electron": "9.4.0",
     "electron-builder": "^22.8.0",
     "@types/react": "^16.9.43",
     "typescript": "^3.9.7"
